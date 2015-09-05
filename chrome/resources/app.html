@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <title>BBC iPlayer Downloader</title>
+    <script src="js/jquery/jquery-1.11.3.min.js"></script>
+    <script src="js/angular/angular.min.js"></script>
+    <script src="js/angular/angular-animate.min.js"></script>
+    <script src="js/angular/angular-aria.min.js"></script>
+    <script src="js/angular/angular-material.min.js"></script>
+    <script src="js/angular/angular-material-icons.min.js"></script>
+
+    <script src="build/app.js"></script>     
+    <link rel="stylesheet" type="text/css" href="css/angular-material.css">
+    <link rel="stylesheet" type="text/css" href="css/app.css">
+  </head>
+  <body ng-app="travelChannel" ng-controller="appController">
+
+    <!-- main panel -->
+    <md-content>
+      <md-toolbar>
+        <div class="md-toolbar-tools">
+          <!-- title -->
+          <img src="app.png" style="height: 32px; padding-right: 5px;" />
+          <span ng-if="episodeItem">          
+            <ng-md-icon icon="arrow_back" style="fill: white;" size="20"></ng-md-icon>
+            {{episodeItem.name}}
+          </span>
+        </div>
+      </md-toolbar>
+    </md-content>  
+    
+
+    <!-- content panel -->
+    <md-content class="content">      
+      <md-list ng-if="views.episodesList">
+        <md-list-item ng-repeat="episodeItem in episodesList" class="md-3-line pointer" ng-click="episodes(episodeItem)">
+          <img ng-src="{{episodeItem.image}}" class="md-avatar" />
+          <div class="md-list-item-text">
+            <h3>{{episodeItem.name}}</h3>
+            <p><small>{{episodeItem.description}}</small></p>            
+          </div>
+        </md-list-item>
+      </md-list>
+
+      <div ng-if="views.episodes">
+        <md-list-item ng-repeat="episode in episodes" class="md-3-line">
+          <img ng-src="{{episodeItem.image}}" class="md-avatar" />
+          <div class="md-list-item-text">
+            <h3>{{episode.title}}</h3>
+            <p><small>{{episode.description}}</small></p>        
+            <episode-videos episode="episode">
+              {{videos}}
+            </episode-videos>
+          </div>
+        </md-list-item>
+      </div>
+    </md-content>
+
+  </body>
+</html>
