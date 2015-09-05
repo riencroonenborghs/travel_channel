@@ -2,7 +2,7 @@
 
 <html>
   <head>
-    <title>BBC iPlayer Downloader</title>
+    <title>Travel Channel</title>
     <script src="js/jquery/jquery-1.11.3.min.js"></script>
     <script src="js/angular/angular.min.js"></script>
     <script src="js/angular/angular-animate.min.js"></script>
@@ -22,8 +22,11 @@
         <div class="md-toolbar-tools">
           <!-- title -->
           <img src="app.png" style="height: 32px; padding-right: 5px;" />
-          <span ng-if="episodeItem">          
-            <ng-md-icon icon="arrow_back" style="fill: white;" size="20"></ng-md-icon>
+          <span ng-if="views.episodesList">
+            Travel Channel
+          </span>
+          <span ng-if="views.episodes">
+            <ng-md-icon icon="arrow_back" style="fill: white;" size="20" ng-click="backToEpisodesList()" class="pointer"></ng-md-icon>
             {{episodeItem.name}}
           </span>
         </div>
@@ -32,9 +35,16 @@
     
 
     <!-- content panel -->
-    <md-content class="content">      
+    <md-content class="content">   
+      <div class="loading" ng-if="loading" layout="row">
+        <span flex></span>
+        <md-progress-circular class="md-hue-2" md-mode="indeterminate"></md-progress-circular>
+        <span flex></span>
+      </div>
+
       <md-list ng-if="views.episodesList">
-        <md-list-item ng-repeat="episodeItem in episodesList" class="md-3-line pointer" ng-click="episodes(episodeItem)">
+        <md-subheader ng-if="!loading"> {{episodesList.length}} Programs</md-subheader>
+        <md-list-item ng-repeat="episodeItem in episodesList" class="md-3-line pointer" ng-click="goToEpisodes(episodeItem)">
           <img ng-src="{{episodeItem.image}}" class="md-avatar" />
           <div class="md-list-item-text">
             <h3>{{episodeItem.name}}</h3>
@@ -44,11 +54,18 @@
       </md-list>
 
       <div ng-if="views.episodes">
+        <md-subheader ng-if="!loading"> {{episodes.length}} Episodes</md-subheader>
         <md-list-item ng-repeat="episode in episodes" class="md-3-line">
-          <img ng-src="{{episodeItem.image}}" class="md-avatar" />
+          <img ng-src="{{episode.image}}" class="md-avatar" />
           <div class="md-list-item-text">
             <h3>{{episode.title}}</h3>
-            <p><small>{{episode.description}}</small></p>        
+            <div>
+              <small>
+                {{episode.description}}
+                <br />
+                {{episode.duration}} minutes
+              </small>
+            </div>        
             <episode-videos episode="episode">
               {{videos}}
             </episode-videos>

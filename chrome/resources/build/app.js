@@ -60,7 +60,9 @@
                     episode = {
                       title: data.title,
                       description: data.description,
-                      smil: data.releaseUrl
+                      smil: data.releaseUrl,
+                      image: SERVER + data.thumbnailUrl,
+                      duration: data.duration
                     };
                     results.push(episode);
                   }
@@ -88,7 +90,6 @@
                     srcRe = /src=\"(.+).mp4\"/;
                     widthRe = /width=\"(\d+)\"/;
                     heightRe = /height=\"(\d+)\"/;
-                    console.debug(srcRe.exec(video));
                     video = $(_video)[0].outerHTML;
                     src = srcRe.exec(video)[1];
                     width = widthRe.exec(video)[1];
@@ -112,7 +113,7 @@
 
   app.controller("appController", [
     "$scope", "Channel", function($scope, Channel) {
-      var episodesList;
+      var backToEpisodesList, resetLists, resetViews;
       $scope.views = {
         episodesList: true,
         episodes: false
@@ -121,25 +122,41 @@
       $scope.episodesItem = null;
       $scope.episodes = null;
       $scope.videos = null;
-      $scope.episodesList = episodesList;
-      episodesList = function() {
-        $scope.views = {
+      $scope.loading = true;
+      resetViews = function() {
+        return $scope.views = {
           episodesList: true,
           episodes: false
         };
-        $scope.episodeItem = null;
+      };
+      resetLists = function() {
+        $scope.episodesList = null;
+        $scope.episodesItem = null;
+        $scope.episodes = null;
+        return $scope.videos = null;
+      };
+      $scope.backToEpisodesList = function() {
+        return backToEpisodesList();
+      };
+      backToEpisodesList = function() {
+        $scope.loading = true;
+        resetViews();
+        resetLists();
         return Channel.service.episodesList().then(function(episodesList) {
+          $scope.loading = false;
           return $scope.episodesList = episodesList;
         });
       };
-      episodesList();
-      return $scope.episodes = function(episodeItem) {
+      backToEpisodesList();
+      return $scope.goToEpisodes = function(episodeItem) {
+        $scope.loading = true;
         $scope.views = {
           episodesList: false,
           episodes: true
         };
         $scope.episodeItem = episodeItem;
         return Channel.service.episodes(episodeItem).then(function(episodes) {
+          $scope.loading = false;
           return $scope.episodes = episodes;
         });
       };

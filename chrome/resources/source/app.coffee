@@ -36,6 +36,8 @@ app.service "Channel", [ "$http", "$q", "SERVER", "EPISODES", "$parse", ($http, 
             title: data.title
             description: data.description
             smil: data.releaseUrl
+            image: SERVER+data.thumbnailUrl
+            duration: data.duration
           episode
         deferred.resolve episodes
       deferred.promise    
@@ -50,7 +52,6 @@ app.service "Channel", [ "$http", "$q", "SERVER", "EPISODES", "$parse", ($http, 
               srcRe = /src=\"(.+).mp4\"/
               widthRe = /width=\"(\d+)\"/
               heightRe = /height=\"(\d+)\"/
-              console.debug srcRe.exec(video)
               video = $(_video)[0].outerHTML
               src = srcRe.exec(video)[1]
               width = widthRe.exec(video)[1]
@@ -67,20 +68,34 @@ app.controller "appController", ["$scope", "Channel",
   $scope.episodesItem = null
   $scope.episodes     = null
   $scope.videos       = null
+  $scope.loading      = true
+
+  resetViews = ->
+    $scope.views        = {episodesList: true, episodes: false}
+  resetLists = ->
+    $scope.episodesList = null
+    $scope.episodesItem = null
+    $scope.episodes     = null
+    $scope.videos       = null
 
   # start with episodes list
-  $scope.episodesList = episodesList
-  episodesList = ->
-    $scope.views        = {episodesList: true, episodes: false}
-    $scope.episodeItem  = null
-    Channel.service.episodesList().then (episodesList) -> $scope.episodesList = episodesList
-  episodesList()
+  $scope.backToEpisodesList = -> backToEpisodesList()
+  backToEpisodesList = ->
+    $scope.loading = true
+    resetViews()
+    resetLists()
+    Channel.service.episodesList().then (episodesList) -> 
+      $scope.loading = false
+      $scope.episodesList = episodesList
+  backToEpisodesList()
 
   # episodes for episode item
-  $scope.episodes = (episodeItem) ->
+  $scope.goToEpisodes = (episodeItem) ->
+    $scope.loading = true
     $scope.views        = {episodesList: false, episodes: true}
     $scope.episodeItem  = episodeItem
     Channel.service.episodes(episodeItem).then (episodes) -> 
+      $scope.loading = false
       $scope.episodes = episodes
 ]
 
