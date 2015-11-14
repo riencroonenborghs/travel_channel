@@ -2,21 +2,13 @@
 (function() {
   var app;
 
-  app = angular.module("travelChannel", ["ngAria", "ngAnimate", "ngMaterial", "ngMdIcons"]);
-
-  app.config(function($mdThemingProvider) {
-    return $mdThemingProvider.theme("default").primaryPalette("blue").accentPalette("green");
-  });
-
-  app.constant("SERVER", "http://www.travelchannel.com");
-
-  app.constant("EPISODES", "/shows/whats-new-on-travel-channel/articles/full-episodes");
+  app = angular.module("travelChannel.services", []);
 
   app.service("Channel", [
     "$http", "$q", "SERVER", "EPISODES", "$parse", function($http, $q, SERVER, EPISODES, $parse) {
       return {
         service: {
-          episodesList: function() {
+          programs: function() {
             var deferred;
             deferred = $q.defer();
             $http.get(SERVER + EPISODES).then(function(d) {
@@ -44,10 +36,10 @@
             });
             return deferred.promise;
           },
-          episodes: function(episodeItem) {
+          episodes: function(program) {
             var deferred;
             deferred = $q.defer();
-            $http.get(SERVER + episodeItem.url).then((function(_this) {
+            $http.get(SERVER + program.url).then((function(_this) {
               return function(d) {
                 var data, episode, episodes, playlistItem, playlistItems;
                 playlistItems = $(d.data).find(".videoplaylist-item");
@@ -107,79 +99,6 @@
             return deferred.promise;
           }
         }
-      };
-    }
-  ]);
-
-  app.controller("appController", [
-    "$scope", "Channel", function($scope, Channel) {
-      var backToEpisodesList, resetLists, resetViews;
-      $scope.views = {
-        episodesList: true,
-        episodes: false
-      };
-      $scope.episodesList = null;
-      $scope.episodesItem = null;
-      $scope.episodes = null;
-      $scope.videos = null;
-      $scope.loading = true;
-      resetViews = function() {
-        return $scope.views = {
-          episodesList: true,
-          episodes: false
-        };
-      };
-      resetLists = function() {
-        $scope.episodesList = null;
-        $scope.episodesItem = null;
-        $scope.episodes = null;
-        return $scope.videos = null;
-      };
-      $scope.backToEpisodesList = function() {
-        return backToEpisodesList();
-      };
-      backToEpisodesList = function() {
-        $scope.loading = true;
-        resetViews();
-        resetLists();
-        return Channel.service.episodesList().then(function(episodesList) {
-          $scope.loading = false;
-          return $scope.episodesList = episodesList;
-        });
-      };
-      backToEpisodesList();
-      return $scope.goToEpisodes = function(episodeItem) {
-        $scope.loading = true;
-        $scope.views = {
-          episodesList: false,
-          episodes: true
-        };
-        $scope.episodeItem = episodeItem;
-        return Channel.service.episodes(episodeItem).then(function(episodes) {
-          $scope.loading = false;
-          return $scope.episodes = episodes;
-        });
-      };
-    }
-  ]);
-
-  app.directive("episodeVideos", [
-    function() {
-      return {
-        restrict: "E",
-        scope: {
-          episode: "="
-        },
-        transclude: true,
-        templateUrl: "videos.html",
-        controller: [
-          "$scope", "Channel", function($scope, Channel) {
-            $scope.videos = [];
-            return Channel.service.videos($scope.episode).then(function(videos) {
-              return $scope.videos = videos;
-            });
-          }
-        ]
       };
     }
   ]);
