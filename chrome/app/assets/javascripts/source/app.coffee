@@ -11,7 +11,7 @@ app = angular.module "travelChannel", [
 app.config ($mdThemingProvider) ->
   $mdThemingProvider.theme("default")
     .primaryPalette("blue")
-    .accentPalette("green")
+    .accentPalette("orange")
 
 app.constant "SERVER", "http://www.travelchannel.com"
-app.constant "EPISODES", "/shows/whats-new-on-travel-channel/articles/full-episodes"
+app.constant "EPISODES", "/video/full-episodes"

@@ -4,102 +4,90 @@
 
   app = angular.module("travelChannel.services", []);
 
-  app.service("Channel", [
-    "$http", "$q", "SERVER", "EPISODES", "$parse", function($http, $q, SERVER, EPISODES, $parse) {
-      return {
-        service: {
-          programs: function() {
-            var deferred;
-            deferred = $q.defer();
-            $http.get(SERVER + EPISODES).then(function(d) {
-              var _description, _img, _link, item, links, list;
-              links = $(d.data).find("section.topn-wrapper");
-              list = (function() {
-                var i, len, results;
-                results = [];
-                for (i = 0, len = links.length; i < len; i++) {
-                  item = links[i];
-                  item = $(item);
-                  _link = $(item.find("h2 a"));
-                  _img = $(item.find("img"));
-                  _description = $(item.find(".topn-description"))[0].innerText.replace("Watch Full Episodes", "");
-                  results.push({
-                    url: _link.attr('href'),
-                    name: _link.text(),
-                    image: _img.attr("src"),
-                    description: _description
-                  });
-                }
-                return results;
-              })();
-              return deferred.resolve(list);
-            });
-            return deferred.promise;
-          },
-          episodes: function(program) {
-            var deferred;
-            deferred = $q.defer();
-            $http.get(SERVER + program.url).then((function(_this) {
-              return function(d) {
-                var data, episode, episodes, playlistItem, playlistItems;
-                playlistItems = $(d.data).find(".videoplaylist-item");
-                episodes = (function() {
-                  var i, len, results;
-                  results = [];
-                  for (i = 0, len = playlistItems.length; i < len; i++) {
-                    playlistItem = playlistItems[i];
-                    data = $(playlistItem).data().videoplaylistData;
-                    episode = {
-                      title: data.title,
-                      description: data.description,
-                      smil: data.releaseUrl,
-                      image: SERVER + data.thumbnailUrl,
-                      duration: data.duration
-                    };
-                    results.push(episode);
+  app.service("Episodes", [
+    "$http", "$q", "SERVER", "EPISODES", function($http, $q, SERVER, EPISODES) {
+      var service;
+      service = {
+        videos: function(link) {
+          var deferred;
+          deferred = $q.defer();
+          $http.get(SERVER + link).then(function(linkData) {
+            var deferred2, url;
+            url = $(linkData.data).find("meta[itemprop='url']")[0].content;
+            deferred2 = $q.defer();
+            $http.get(url).then((function(_this) {
+              return function(SMILData) {
+                var _switch, _video, data, height, heightRe, i, index, j, len, len1, ref, ref1, src, srcRe, video, videos, width, widthRe;
+                videos = [];
+                data = SMILData.data.replace(/video/g, 'replacedvideo');
+                ref = $(data).find("switch");
+                for (index = i = 0, len = ref.length; i < len; index = ++i) {
+                  _switch = ref[index];
+                  if (index === 0) {
+                    ref1 = $(_switch).find("replacedvideo");
+                    for (j = 0, len1 = ref1.length; j < len1; j++) {
+                      _video = ref1[j];
+                      srcRe = /src=\"(.+).mp4\"/;
+                      widthRe = /width=\"(\d+)\"/;
+                      heightRe = /height=\"(\d+)\"/;
+                      video = $(_video)[0].outerHTML;
+                      src = srcRe.exec(video)[1];
+                      width = widthRe.exec(video)[1];
+                      height = heightRe.exec(video)[1];
+                      videos.push({
+                        src: src,
+                        width: width,
+                        height: height
+                      });
+                    }
                   }
-                  return results;
-                })();
-                return deferred.resolve(episodes);
+                }
+                return deferred2.resolve(videos);
               };
             })(this));
-            return deferred.promise;
-          },
-          videos: function(episode) {
-            var deferred;
-            deferred = $q.defer();
-            $http.get(episode.smil).then(function(d) {
-              var _switch, _video, data, height, heightRe, i, index, j, len, len1, list, ref, ref1, src, srcRe, video, width, widthRe;
-              list = [];
-              data = d.data.replace(/video/g, 'replacedvideo');
-              ref = $(data).find("switch");
-              for (index = i = 0, len = ref.length; i < len; index = ++i) {
-                _switch = ref[index];
-                if (index === 0) {
-                  ref1 = $(_switch).find("replacedvideo");
-                  for (j = 0, len1 = ref1.length; j < len1; j++) {
-                    _video = ref1[j];
-                    srcRe = /src=\"(.+).mp4\"/;
-                    widthRe = /width=\"(\d+)\"/;
-                    heightRe = /height=\"(\d+)\"/;
-                    video = $(_video)[0].outerHTML;
-                    src = srcRe.exec(video)[1];
-                    width = widthRe.exec(video)[1];
-                    height = heightRe.exec(video)[1];
-                    list.push({
-                      src: src,
-                      width: width,
-                      height: height
-                    });
-                  }
+            return deferred.resolve(deferred2.promise);
+          });
+          return deferred.promise;
+        },
+        index: function() {
+          var deferred;
+          deferred = $q.defer();
+          $http.get(SERVER + EPISODES).then(function(d) {
+            var _item, _section, episode, item, link, program, programs, section;
+            programs = (function() {
+              var i, j, len, len1, ref, ref1, results;
+              ref = $(d.data).find(".fullEpisode section.jukebox-wrapper");
+              results = [];
+              for (i = 0, len = ref.length; i < len; i++) {
+                _section = ref[i];
+                section = $(_section);
+                program = {
+                  title: section.find("h2.jukebox-header-title").text(),
+                  episodes: []
+                };
+                ref1 = section.find(".jukebox-inner .jukebox-item");
+                for (j = 0, len1 = ref1.length; j < len1; j++) {
+                  _item = ref1[j];
+                  item = $(_item);
+                  link = item.find(".jukebox-item-title a").attr("href");
+                  episode = {
+                    title: item.find(".jukebox-item-title a").text(),
+                    runtime: item.find(".jukebox-item-title small").text(),
+                    link: link,
+                    image: item.find(".jukebox-item-media a.icon img").attr("src")
+                  };
+                  program.episodes.push(episode);
                 }
+                results.push(program);
               }
-              return deferred.resolve(list);
-            });
-            return deferred.promise;
-          }
+              return results;
+            })();
+            return deferred.resolve(programs);
+          });
+          return deferred.promise;
         }
       };
+      return service;
     }
   ]);
 

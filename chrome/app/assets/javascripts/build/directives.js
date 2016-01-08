@@ -4,7 +4,7 @@
 
   app = angular.module("travelChannel.directives", []);
 
-  app.directive("episodeVideos", [
+  app.directive("videos", [
     function() {
       return {
         restrict: "E",
@@ -14,10 +14,10 @@
         transclude: true,
         templateUrl: "videos.html",
         controller: [
-          "$scope", "Channel", function($scope, Channel) {
+          "$scope", "Episodes", function($scope, Episodes) {
             $scope.videos = [];
-            return Channel.service.videos($scope.episode).then(function(videos) {
-              return $scope.videos = videos;
+            return Episodes.videos($scope.episode.link).then(function(data) {
+              return $scope.videos = data;
             });
           }
         ]

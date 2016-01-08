@@ -5,54 +5,13 @@
   app = angular.module("travelChannel.controllers", ["travelChannel.services"]);
 
   app.controller("appController", [
-    "$scope", "Channel", function($scope, Channel) {
-      var backToPrograms, resetLists, resetViews;
-      $scope.views = {
-        programs: true,
-        episodes: false
-      };
-      $scope.programs = null;
-      $scope.program = null;
-      $scope.episodes = null;
-      $scope.videos = null;
+    "$scope", "Episodes", function($scope, Episodes) {
       $scope.loading = true;
-      resetViews = function() {
-        return $scope.views = {
-          programs: true,
-          episodes: false
-        };
-      };
-      resetLists = function() {
-        $scope.programs = null;
-        $scope.program = null;
-        $scope.episodes = null;
-        return $scope.videos = null;
-      };
-      $scope.backToPrograms = function() {
-        return backToPrograms();
-      };
-      backToPrograms = function() {
-        $scope.loading = true;
-        resetViews();
-        resetLists();
-        return Channel.service.programs().then(function(programs) {
-          $scope.loading = false;
-          return $scope.programs = programs;
-        });
-      };
-      backToPrograms();
-      return $scope.goToEpisodes = function(program) {
-        $scope.loading = true;
-        $scope.views = {
-          programs: false,
-          episodes: true
-        };
-        $scope.program = program;
-        return Channel.service.episodes(program).then(function(episodes) {
-          $scope.loading = false;
-          return $scope.episodes = episodes;
-        });
-      };
+      $scope.programs = [];
+      return Episodes.index().then(function(data) {
+        $scope.loading = false;
+        return $scope.programs = data;
+      });
     }
   ]);
 

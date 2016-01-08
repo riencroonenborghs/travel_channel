@@ -1,14 +1,14 @@
 app = angular.module "travelChannel.directives", []
 
-app.directive "episodeVideos", [->
+app.directive "videos", [->
   restrict: "E"
   scope:
     episode: "="
   transclude: true
   templateUrl: "videos.html"
-  controller: [ "$scope", "Channel", ($scope, Channel) ->
+  controller: [ "$scope", "Episodes", ($scope, Episodes) ->
     $scope.videos = []
-    Channel.service.videos($scope.episode).then (videos) ->
-      $scope.videos = videos
+    Episodes.videos($scope.episode.link).then (data) ->
+      $scope.videos = data
   ]
 ]
