@@ -19,3 +19,5 @@ Install the Extension like any other extension:
 ## Screenshots
 
 ![Screenshot 1](https://raw.githubusercontent.com/riencroonenborghs/travel_channel/master/screenshots/01.png)
+![Screenshot 2](https://raw.githubusercontent.com/riencroonenborghs/travel_channel/master/screenshots/02.png)
+![Screenshot 3](https://raw.githubusercontent.com/riencroonenborghs/travel_channel/master/screenshots/03.png)
