@@ -4,6 +4,25 @@
 
   app = angular.module("travelChannel.directives", []);
 
+  app.directive("navbar", [
+    function() {
+      return {
+        restrict: "E",
+        scope: {
+          model: "="
+        },
+        templateUrl: "app/views/navbar.html",
+        controller: [
+          "$scope", "$location", function($scope, $location) {
+            return $scope.go = function(url) {
+              return $location.path(url);
+            };
+          }
+        ]
+      };
+    }
+  ]);
+
   app.directive("videos", [
     function() {
       return {
@@ -12,11 +31,11 @@
           episode: "="
         },
         transclude: true,
-        templateUrl: "videos.html",
+        templateUrl: "app/views/videos.html",
         controller: [
-          "$scope", "Episodes", function($scope, Episodes) {
+          "$scope", "TravelChannel", function($scope, TravelChannel) {
             $scope.videos = [];
-            return Episodes.videos($scope.episode.link).then(function(data) {
+            return TravelChannel.videos($scope.episode.smilUrl).then(function(data) {
               return $scope.videos = data;
             });
           }

@@ -2,7 +2,7 @@
 (function() {
   var app;
 
-  app = angular.module("travelChannel", ["ngAria", "ngAnimate", "ngMaterial", "ngMdIcons", "travelChannel.controllers", "travelChannel.directives", "travelChannel.services"]);
+  app = angular.module("travelChannel", ["ngAria", "ngAnimate", "ngMaterial", "ngMdIcons", "ngRoute", "travelChannel.controllers", "travelChannel.directives", "travelChannel.services", "travelChannel.factories"]);
 
   app.config(function($mdThemingProvider) {
     return $mdThemingProvider.theme("default").primaryPalette("blue").accentPalette("orange");
@@ -11,5 +11,19 @@
   app.constant("SERVER", "http://www.travelchannel.com");
 
   app.constant("EPISODES", "/video/full-episodes");
+
+  app.config(function($routeProvider, $locationProvider) {
+    $routeProvider.when("/programs", {
+      templateUrl: "app/views/programs.html",
+      controller: "ProgramsController"
+    }).when("/episodes/:name/:url*", {
+      templateUrl: "app/views/episodes.html",
+      controller: "EpisodesController"
+    }).otherwise("/programs", {
+      templateUrl: "app/views/programs.html",
+      controller: "ProgramsController"
+    });
+    return $locationProvider.html5Mode(true);
+  });
 
 }).call(this);

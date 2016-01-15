@@ -5,12 +5,41 @@
   app = angular.module("travelChannel.controllers", ["travelChannel.services"]);
 
   app.controller("appController", [
-    "$scope", "Episodes", function($scope, Episodes) {
+    "$scope", function($scope) {
+      return $scope.search = {
+        query: ""
+      };
+    }
+  ]);
+
+  app.controller("ProgramsController", [
+    "$scope", "$location", "TravelChannel", function($scope, $location, TravelChannel) {
       $scope.loading = true;
       $scope.programs = [];
-      return Episodes.index().then(function(data) {
+      TravelChannel.programs().then(function(programs) {
+        console.debug(programs);
         $scope.loading = false;
-        return $scope.programs = data;
+        return $scope.programs = programs;
+      });
+      return $scope.episodes = function(program) {
+        return $location.path("/episodes/" + program.name + "/" + program.url);
+      };
+    }
+  ]);
+
+  app.controller("EpisodesController", [
+    "$scope", "$location", "$routeParams", "TravelChannel", "NavbarFactory", function($scope, $location, $routeParams, TravelChannel, NavbarFactory) {
+      var name, url;
+      name = $routeParams.name;
+      $scope.Navbar = new NavbarFactory;
+      $scope.Navbar.addLink("/programs", "Programs");
+      $scope.Navbar.addTitle(name);
+      url = $routeParams.url;
+      $scope.loading = true;
+      $scope.episodes = [];
+      return TravelChannel.episodes(url).then(function(episodes) {
+        $scope.loading = false;
+        return $scope.episodes = episodes;
       });
     }
   ]);
