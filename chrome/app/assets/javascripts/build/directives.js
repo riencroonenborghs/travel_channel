@@ -35,7 +35,9 @@
         controller: [
           "$scope", "TravelChannel", function($scope, TravelChannel) {
             $scope.videos = [];
+            $scope.loading = true;
             return TravelChannel.videos($scope.episode.smilUrl).then(function(data) {
+              $scope.loading = false;
               return $scope.videos = data;
             });
           }

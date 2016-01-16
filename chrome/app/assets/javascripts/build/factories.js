@@ -5,7 +5,7 @@
   app = angular.module("travelChannel.factories", []);
 
   app.factory("NavbarFactory", [
-    function() {
+    "$location", function($location) {
       var Model;
       return Model = (function() {
         function Model() {
@@ -23,8 +23,17 @@
           return this.list.push({
             type: "link",
             url: url,
-            label: label
+            label: label,
+            go: (function(_this) {
+              return function() {
+                return $location.path(url);
+              };
+            })(this)
           });
+        };
+
+        Model.prototype.reset = function() {
+          return this.list = [];
         };
 
         return Model;

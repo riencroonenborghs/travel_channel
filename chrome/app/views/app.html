@@ -32,6 +32,13 @@
           <span ng-if="views.programs">
             Travel Channel
           </span>
+          <span ng-repeat="item in Navbar.list">
+            <span ng-if="item.type == 'title'">{{item.title}}</span>
+            <span ng-if="item.type == 'link'">
+              <ng-md-icon icon="arrow_back" style="fill: white" ng-click="item.go()" class="pointer"></ng-md-icon> 
+              {{item.label}}
+            </span>            
+          </span>
         </div>
       </md-toolbar>
     </md-content>  

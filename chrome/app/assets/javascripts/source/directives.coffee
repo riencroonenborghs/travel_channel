@@ -17,8 +17,10 @@ app.directive "videos", [->
   transclude: true
   templateUrl: "app/views/videos.html"
   controller: [ "$scope", "TravelChannel", ($scope, TravelChannel) ->
-    $scope.videos = []
+    $scope.videos   = []
+    $scope.loading  = true
     TravelChannel.videos($scope.episode.smilUrl).then (data) ->
-      $scope.videos = data
+      $scope.loading  = false
+      $scope.videos   = data
   ]
 ]

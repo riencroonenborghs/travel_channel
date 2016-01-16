@@ -2,10 +2,12 @@
 (function() {
   var app;
 
-  app = angular.module("travelChannel.controllers", ["travelChannel.services"]);
+  app = angular.module("travelChannel.controllers", []);
 
   app.controller("appController", [
-    "$scope", function($scope) {
+    "$scope", "NavbarFactory", function($scope, NavbarFactory) {
+      $scope.Navbar = new NavbarFactory;
+      $scope.Navbar.addTitle("TravelChannel");
       return $scope.search = {
         query: ""
       };
@@ -14,10 +16,11 @@
 
   app.controller("ProgramsController", [
     "$scope", "$location", "TravelChannel", function($scope, $location, TravelChannel) {
+      $scope.Navbar.reset();
+      $scope.Navbar.addTitle("TravelChannel");
       $scope.loading = true;
       $scope.programs = [];
       TravelChannel.programs().then(function(programs) {
-        console.debug(programs);
         $scope.loading = false;
         return $scope.programs = programs;
       });
@@ -31,8 +34,8 @@
     "$scope", "$location", "$routeParams", "TravelChannel", "NavbarFactory", function($scope, $location, $routeParams, TravelChannel, NavbarFactory) {
       var name, url;
       name = $routeParams.name;
-      $scope.Navbar = new NavbarFactory;
-      $scope.Navbar.addLink("/programs", "Programs");
+      $scope.Navbar.reset();
+      $scope.Navbar.addLink("/programs");
       $scope.Navbar.addTitle(name);
       url = $routeParams.url;
       $scope.loading = true;

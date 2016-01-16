@@ -12,4 +12,6 @@ img.logo { height: 32px; padding-right: 5px; }
 #programs .md-subheader.md-padding { padding-bottom: 0; }
 
 #programs md-list-item:not(:last-child) { border-bottom: 1px solid rgba(211,211,211,0.25); padding-top: 8px !important; padding-bottom: 8px !important; }
-#episodes md-list-item:not(:last-child) { border-bottom: 1px solid rgba(211,211,211,0.25); padding-bottom: 24px !important; }
+#episodes md-list-item:not(:last-child) { border-bottom: 1px solid rgba(211,211,211,0.25); padding-bottom: 8px !important; }
+
+#episodes md-list-item h2 { margin: 0; }

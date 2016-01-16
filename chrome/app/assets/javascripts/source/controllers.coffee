@@ -1,19 +1,22 @@
-app = angular.module "travelChannel.controllers", [
-  "travelChannel.services"
-]
+app = angular.module "travelChannel.controllers", []
 
-app.controller "appController", ["$scope", ($scope) ->
+app.controller "appController", ["$scope", "NavbarFactory", ($scope, NavbarFactory) ->
+  $scope.Navbar = new NavbarFactory
+  $scope.Navbar.addTitle "TravelChannel"
+
   $scope.search =
     query: ""  
 ]
 
 app.controller "ProgramsController", ["$scope", "$location", "TravelChannel",
 ($scope, $location, TravelChannel) ->
-  $scope.loading = true
+  $scope.Navbar.reset()
+  $scope.Navbar.addTitle "TravelChannel"
+
+  $scope.loading  = true
   $scope.programs = []
 
   TravelChannel.programs().then (programs) -> 
-    console.debug programs
     $scope.loading = false
     $scope.programs = programs
 
@@ -22,9 +25,9 @@ app.controller "ProgramsController", ["$scope", "$location", "TravelChannel",
 
 app.controller "EpisodesController", ["$scope", "$location", "$routeParams", "TravelChannel", "NavbarFactory",
 ($scope, $location, $routeParams, TravelChannel, NavbarFactory) ->  
-  name          = $routeParams.name
-  $scope.Navbar = new NavbarFactory
-  $scope.Navbar.addLink "/programs", "Programs"
+  name = $routeParams.name
+  $scope.Navbar.reset()
+  $scope.Navbar.addLink "/programs"
   $scope.Navbar.addTitle name
 
   url             = $routeParams.url
