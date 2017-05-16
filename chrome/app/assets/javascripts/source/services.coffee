@@ -6,24 +6,26 @@ app.service "TravelChannel", [ "$http", "$q", "SERVER", "EPISODES", ($http, $q, 
       deferred = $q.defer()
       $http.get(SERVER+EPISODES).then (d) ->
         programs = []
-        for item in $(d.data).find(".fullEpisode")
+        for item in $(d.data).find(".m-MediaBlock--playlist")
+          _item = $(item)
+          image = _item.find("noscript").html().match(/src=\"(.*)\"/)[1]
           program = 
-            name: $(item).find(".jukebox-header h2").html()
-            url: $(item).find(".jukebox-header .jukebox-header-moreText").attr("href")
-            image: $(item).find(".jukebox-inner .jukebox-item-media img").attr("src")
+            name: _item.find(".m-MediaBlock__a-HeadlineText").html()
+            url: _item.find(".m-MediaBlock__m-MediaWrap a").attr("href")
+            image: image
           programs.push program if program.name
         deferred.resolve programs
       deferred.promise
     episodes: (url) ->
       deferred = $q.defer()
-      $http.get(SERVER+url).then (d) ->
-        episodes = for item in $(d.data).find(".videoplaylist-inner .videoplaylist-item")          
-          data    = $(item).data().videoplaylistData
-          episode = 
-            name: data.title
-            image: SERVER+data.thumbnailUrl
-            runtime: data.duration
-            smilUrl: data.releaseUrl
+      $http.get(url).then (d) ->
+        data = JSON.parse $(d.data).find(".m-VideoPlayer__a-ContainerInner #video-player script")[0].innerText
+        episodes = for video in data.channels[0].videos
+          episode =
+            name: video.title
+            image: SERVER + video.thumbnailUrl
+            runtime: video.duration
+            smilUrl: video.releaseUrl
         deferred.resolve episodes
       deferred.promise
     videos: (url) ->

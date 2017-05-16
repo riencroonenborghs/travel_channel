@@ -12,15 +12,17 @@
           var deferred;
           deferred = $q.defer();
           $http.get(SERVER + EPISODES).then(function(d) {
-            var i, item, len, program, programs, ref;
+            var _item, i, image, item, len, program, programs, ref;
             programs = [];
-            ref = $(d.data).find(".fullEpisode");
+            ref = $(d.data).find(".m-MediaBlock--playlist");
             for (i = 0, len = ref.length; i < len; i++) {
               item = ref[i];
+              _item = $(item);
+              image = _item.find("noscript").html().match(/src=\"(.*)\"/)[1];
               program = {
-                name: $(item).find(".jukebox-header h2").html(),
-                url: $(item).find(".jukebox-header .jukebox-header-moreText").attr("href"),
-                image: $(item).find(".jukebox-inner .jukebox-item-media img").attr("src")
+                name: _item.find(".m-MediaBlock__a-HeadlineText").html(),
+                url: _item.find(".m-MediaBlock__m-MediaWrap a").attr("href"),
+                image: image
               };
               if (program.name) {
                 programs.push(program);
@@ -33,20 +35,20 @@
         episodes: function(url) {
           var deferred;
           deferred = $q.defer();
-          $http.get(SERVER + url).then(function(d) {
-            var data, episode, episodes, item;
+          $http.get(url).then(function(d) {
+            var data, episode, episodes, video;
+            data = JSON.parse($(d.data).find(".m-VideoPlayer__a-ContainerInner #video-player script")[0].innerText);
             episodes = (function() {
               var i, len, ref, results;
-              ref = $(d.data).find(".videoplaylist-inner .videoplaylist-item");
+              ref = data.channels[0].videos;
               results = [];
               for (i = 0, len = ref.length; i < len; i++) {
-                item = ref[i];
-                data = $(item).data().videoplaylistData;
+                video = ref[i];
                 results.push(episode = {
-                  name: data.title,
-                  image: SERVER + data.thumbnailUrl,
-                  runtime: data.duration,
-                  smilUrl: data.releaseUrl
+                  name: video.title,
+                  image: SERVER + video.thumbnailUrl,
+                  runtime: video.duration,
+                  smilUrl: video.releaseUrl
                 });
               }
               return results;
